@@ -30,6 +30,7 @@ This is a basic music bot that also has the ability to listen to voice commands.
 - `/play <playlist-url/url/query>` will put the respective video or videos in the queue and start playing.
 - The other commands are like normal music commands and described in the drop-down in the command list.
 - **Voice commands**:
+  - **Important**: to enable the voice commands. You have to execute the command `toggle-speech` first!
   - All voice commands start with `music`
   - There are: `play, pause, resume, skip, shuffle, list`
   - For example: `music play <some song>`
