@@ -1,0 +1,20 @@
+{
+  "name": "stt-example-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js ./test-config.json",
+    "deploy-test": "node command-deployer.js ./test-config.json"
+  },
+  "author": "ShadowLp174",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/rest": "^0.3.0",
+    "@discordjs/voice": "^0.8.0",
+    "discord-api-types": "^0.29.0",
+    "discord-speech-to-text": "^1.1.3",
+    "discord.js": "^13.6.0"
+  }
+}
