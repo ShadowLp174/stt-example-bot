@@ -34,4 +34,9 @@ This is a basic music bot that also has the ability to listen to voice commands.
   - There are: `play, pause, resume, skip, shuffle, list`
   - For example: `music play <some song>`
 
+## Voice Transcriber
+
+The voice transcriber used to translate the spoken things to text is also available as an independent module. Look it up on [Github](https://github.com/shadowlp174/discord-stt) or on [NPM](https://www.npmjs.com/package/discord-speech-to-text).
+
+
 *This bot is not perfect. Please contact me through GitHub or similar if you have any problems :)*
