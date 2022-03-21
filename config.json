@@ -2,7 +2,7 @@
 	"token": "your-token-goes-here",
   "witAi": "your-wit.ai-client-token",
   "clientId": "your-bots-application-id",
-  "guildId": "you-server-id",
+  "guildIds": ["you-server-id"],
 	"ytApiKey": "your-youtube-key",
 	"geniusToken": "your-genius-api-access-token"
 }

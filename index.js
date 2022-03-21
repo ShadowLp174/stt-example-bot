@@ -1,7 +1,9 @@
 const fs = require('fs');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 const { Client, Collection, Intents } = require('discord.js');
 const configFile = (process.argv[2]) ? process.argv[2] : './config.json';
-const { token } = require(configFile);
+const { token, clientId, guildIds } = require(configFile); const config = require(configFile);
 const MusicPlayer = require("./discord-player.js");
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES] });
@@ -25,10 +27,7 @@ var DATA = {
 	status: "Idle"
 };
 
-const musicPlayer = new MusicPlayer(client, configFile, DATA);
-musicPlayer.events.on("log", text => console.log("[Music Player][Log] " + text));
-musicPlayer.events.on("error", error => console.error("[Music Player][Error] " + error));
-musicPlayer.events.on("state", state => console.log("[Music Player][State Update] " + state));
+var players = new Map();
 
 client.once('ready', () => {
 	console.log('Ready!');
@@ -53,10 +52,61 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-const { joinVoiceChannel, getVoiceConnection } = require('@discordjs/voice');
+function deployCommands(guilds) {
+	const commands = [];
+	const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+	for (const file of commandFiles) {
+		const command = require(`./commands/${file}`);
+		commands.push(command.data.toJSON());
+	}
+
+	const rest = new REST({ version: '9' }).setToken(token);
+	(async () => {
+		try {
+			console.log('Started refreshing application (/) commands.');
+			guilds.forEach(await (async (guild, i) => {
+				await rest.put(
+					Routes.applicationGuildCommands(clientId, guild),
+					{ body: commands },
+				);
+			}));
+			console.log('Successfully reloaded application (/) commands.');
+		} catch(e) {
+			console.log(e);
+		}
+	})();
+}
+
+client.on('guildCreate', (guild) => {
+	if (config.guildIds.indexOf(guild.id) == -1) {
+		config.guildIds.push(guild.id);
+		fs.writeFile(configFile, JSON.stringify(config), (err) => {
+			if (err) console.log("[GuildCreate][WriteFile][Error]: ", err);
+		});
+	}
+	deployCommands([guild.id]);
+});
+client.on('guildDelete', (guild) => {
+	const i = config.guildIds.indexOf(guild.id);
+	if (i > -1) {
+		config.guildIds.splice(i, 1);
+	}
+	fs.writeFile(configFile, JSON.stringify(config), (err) => {
+		if (err) console.log("[GuildDelete][WriteFile][Error]: ", err);
+	});
+});
 
 async function execute(name, interaction) {
+	if (!players.has(interaction.guildId)) {
+		const musicPlayer = new MusicPlayer(client, configFile, DATA);
+		musicPlayer.events.on("log", text => console.log("[" + interaction.guildId + "][Music Player][Log] " + text));
+		musicPlayer.events.on("error", error => console.error("[" + interaction.guildId + "][Music Player][Error] " + error));
+		musicPlayer.events.on("state", state => console.log("[" + interaction.guildId + "][Music Player][State Update] " + state));
+		players.set(interaction.guildId, musicPlayer);
+	}
 	try {
+		const musicPlayer = players.get(interaction.guild.id);
 		switch(name) {
 			case "join":
 				let s = musicPlayer.join(interaction);
@@ -123,5 +173,20 @@ async function execute(name, interaction) {
 		console.error("Error: ", e);
 	}
 }
+
+const tmp = config.guildIds.slice();
+const guilds = client.guilds.cache.map(guild => guild.id);;
+guilds.forEach((guild, i) => {
+	if (!config.guildIds.includes(guild)) {
+		config.guildIds.push(guild);
+	}
+});
+if (tmp.some(r=> config.guildIds.indexOf(r) >= 0)) {
+	fs.writeFile(configFile, JSON.stringify(config), (err) => {
+		if (err) console.log("[GuildDelete][WriteFile][Error]: ", err);
+	});
+}
+
+deployCommands(guildIds);
 
 client.login(token);

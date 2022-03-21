@@ -19,10 +19,28 @@ This is a basic music bot that also has the ability to listen to voice commands.
   - Head over to the [genius api site](https://genius.com/api-clients) and create a client. Generate an access token and copy it. Put it in the config.json
 - You're ready! :D
 
+## Updating
+
+*This section requires you to have bash installed. It comes bundled with git if you're on Windows, and is preinstalled on most Linux distributions.*
+
+#### For Windows:
+
+- Double-click the update.sh file. If the installation of git went right it should start for itself. If it does not start "git bash" and navigate into the folder. Then run `bash update.sh`
+
+#### For Linux:
+
+- Navigate into the folder through your desired terminal
+- enter `bash update.sh`
+
 ## Running
 
 - Execute `node index.js`
 - Have fun :)
+
+#### For Linux/Git Bash users:
+
+- Execute the start.sh file. If you want to see the logs, execute the logs.sh file
+- This will create a process using `nohup` that stays online even if you close the terminal/shh session. To terminate the process run `bash stop.sh`
 
 ## Usage
 
