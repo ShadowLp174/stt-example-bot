@@ -110,7 +110,7 @@ async function execute(name, interaction) {
 		switch(name) {
 			case "join":
 				let s = musicPlayer.join(interaction);
-				if (!s) interaction.reply({ content: "Please join a voice channel first", ephemeral: true });
+				if (!s) {interaction.reply({ content: "Please join a voice channel first", ephemeral: true }); return;}
 				interaction.reply({ content: "Joined." });
 			break;
 			case "leave":
