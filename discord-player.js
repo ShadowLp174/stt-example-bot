@@ -330,7 +330,7 @@ class MusicPlayer {
         if (!query) return;
         this.textChannel.send("Searching for _" + query + "_");
         let vid = await this.search(query);
-        this.textChannel.send("Added **" + vid.title + " (" + vid.duration.timestamp + ")**to queue");
+        this.textChannel.send("Added **" + vid.title + " (" + vid.duration.timestamp + ")** to queue");
         this.addToQueue(vid);
         if (!this.data.current) this.playNext();
       break;
