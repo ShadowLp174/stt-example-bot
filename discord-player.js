@@ -395,27 +395,17 @@ class MusicPlayer {
         });
       }
     });
-    connection.on(VoiceConnectionStatus.Ready, () => {
-      this.log("Connection ready");
-    });
-    connection.on(VoiceConnectionStatus.Disconnected, () => {
-      this.log("Disconnected :/");
-    });
-    connection.on(VoiceConnectionStatus.Connection, () => {
-      this.log("Trying to reconnect...");
-    });
-    connection.on(VoiceConnectionStatus.Signalling, () => {
-      this.log("Started signalling");
-    });
     connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
     	try {
+        this.log("Reconnecting to voice channel...");
     		await Promise.race([
     			entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
     			entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
     		]);
     		// Seems to be reconnecting to a new channel - ignore disconnect
     	} catch (error) {
-    		// Seems to be a real disconnect which SHOULDN'T be recovered from
+        this.error("Disconnected from voice channel!");
+        this.data.current = null;
     		connection.destroy();
     	}
     });
