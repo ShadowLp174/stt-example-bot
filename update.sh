@@ -5,3 +5,4 @@ git pull origin $branch
 npm install
 cp update-backup-config.json ./config.json
 node command-deployer.js
+unlink update-backup-config.json

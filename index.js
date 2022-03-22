@@ -162,7 +162,7 @@ async function execute(name, interaction) {
 				musicPlayer.toggleSpeech(interaction);
 			break;
 			case "lyrics":
-				//interaction.reply({ content: "This function is currently disabled :/", ephemeral: true });
+				if (config.disableLyrics) {interaction.reply({ content: "This function is currently disabled :/", ephemeral: true });return;}
 				musicPlayer.lyrics(interaction);
 			break;
 			default:
