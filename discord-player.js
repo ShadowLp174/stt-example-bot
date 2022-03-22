@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { AudioPlayerStatus, joinVoiceChannel, getVoiceConnection, createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
+const { AudioPlayerStatus, joinVoiceChannel, getVoiceConnection, createAudioPlayer, createAudioResource, NoSubscriberBehavior, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 const { MessageEmbed } = require("discord.js");
 const events = require('events');
 
@@ -326,11 +326,15 @@ class MusicPlayer {
   async execVoiceCom(cmd) {
     switch(cmd.split(" ")[0]) {
       case "play":
+        this.connection = getVoiceConnection(this.data.guildId);
+        this.connection.subscribe(this.player);
+
         const query = cmd.split(" ").slice(1).join(" ");
         if (!query) return;
         this.textChannel.send("Searching for _" + query + "_");
         let vid = await this.search(query);
         this.textChannel.send("Added **" + vid.title + " (" + vid.duration.timestamp + ")** to queue");
+        if (!vid) return false;
         this.addToQueue(vid);
         if (!this.data.current) this.playNext();
       break;
@@ -391,6 +395,30 @@ class MusicPlayer {
         });
       }
     });
+    connection.on(VoiceConnectionStatus.Ready, () => {
+      this.log("Connection ready");
+    });
+    connection.on(VoiceConnectionStatus.Disconnected, () => {
+      this.log("Disconnected :/");
+    });
+    connection.on(VoiceConnectionStatus.Connection, () => {
+      this.log("Trying to reconnect...");
+    });
+    connection.on(VoiceConnectionStatus.Signalling, () => {
+      this.log("Started signalling");
+    });
+    connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+    	try {
+    		await Promise.race([
+    			entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+    			entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+    		]);
+    		// Seems to be reconnecting to a new channel - ignore disconnect
+    	} catch (error) {
+    		// Seems to be a real disconnect which SHOULDN'T be recovered from
+    		connection.destroy();
+    	}
+    });
 
     return true;
   }
@@ -420,7 +448,7 @@ class MusicPlayer {
     if (!parsed) {
       await interaction.reply({ content: "Searching..." });
       let vid = await this.search(query);
-      if (vid) {interaction.editReply({ content: "Successfully added to queue." });} else {interaction.editReply({ content: "**There was an error loading the youtube video with the id '" + parsed + "'!**"})};
+      if (vid) {interaction.editReply({ content: "Successfully added to queue." });} else {interaction.editReply({ content: "**There was an error loading a youtube video using the query '" + parsed + "'!**"})};
       if (!vid) return false;
       this.addToQueue(vid);
       if (!this.data.current) this.playNext();
