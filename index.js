@@ -100,9 +100,9 @@ client.on('guildDelete', (guild) => {
 async function execute(name, interaction) {
 	if (!players.has(interaction.guildId)) {
 		const musicPlayer = new MusicPlayer(client, configFile, DATA);
-		musicPlayer.events.on("log", text => console.log("[" + interaction.guildId + "][Music Player][Log] " + text));
-		musicPlayer.events.on("error", error => console.error("[" + interaction.guildId + "][Music Player][Error] " + error));
-		musicPlayer.events.on("state", state => console.log("[" + interaction.guildId + "][Music Player][State Update] " + state));
+		musicPlayer.on("log", text => console.log("[" + interaction.guildId + "][Music Player][Log] " + text));
+		musicPlayer.on("error", error => console.error("[" + interaction.guildId + "][Music Player][Error] " + error));
+		musicPlayer.on("state", state => console.log("[" + interaction.guildId + "][Music Player][State Update] " + state));
 		players.set(interaction.guildId, musicPlayer);
 	}
 	try {

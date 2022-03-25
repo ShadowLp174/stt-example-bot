@@ -104,6 +104,12 @@ class MusicPlayer {
       .setTimestamp()
     this.stateMsg.edit({ embeds: [message] });
   }
+  on(event, handler) {
+    this.events.on(event, handler);
+  }
+  once(event, handler) {
+    this.events.once(event, handler);
+  }
 
   youtubeParser(url){
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
