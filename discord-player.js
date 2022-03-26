@@ -436,8 +436,8 @@ class MusicPlayer {
       try {
         videos = await this.fetchPlaylist(playlist);
       } catch(e) {
-        console.error(e);
-        return interaction.reply({ content: "Failed to load playlist. Maybe it's unviewable?" });
+        this.error(e);
+        return interaction.editReply({ content: "Failed to load playlist. Maybe it's unviewable?" });
       }
       if (videos) {interaction.editReply({ content: "Successfully added " + videos.length + " songs to queue." });} else {interaction.editReply({ content: "**There was an error fetching the playlist '" + parsed + "'!**"});return false;};
       videos.forEach((vid, i) => {
