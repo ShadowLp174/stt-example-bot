@@ -93,6 +93,9 @@ class MusicPlayer {
   log(data) {
     this.events.emit("log", data);
   }
+  error(data) {
+    this.events.emit("error", data);
+  }
   stateUpdate() {
     this.events.emit("state", this.data.status);
     if (!this.stateMsg) return;
