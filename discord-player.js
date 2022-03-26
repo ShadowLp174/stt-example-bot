@@ -432,7 +432,13 @@ class MusicPlayer {
     let playlist = this.playlistParser(query);
     if (playlist) {
       await interaction.reply({ content: "Loading Playlist items..." });
-      let videos = await this.fetchPlaylist(playlist);
+      var videos;
+      try {
+        videos = await this.fetchPlaylist(playlist);
+      } catch(e) {
+        console.error(e);
+        return interaction.reply({ content: "Failed to load playlist. Maybe it's unviewable?" });
+      }
       if (videos) {interaction.editReply({ content: "Successfully added " + videos.length + " songs to queue." });} else {interaction.editReply({ content: "**There was an error fetching the playlist '" + parsed + "'!**"});return false;};
       videos.forEach((vid, i) => {
         this.addToQueue(vid);
