@@ -3,6 +3,8 @@ const { AudioPlayerStatus, joinVoiceChannel, getVoiceConnection, createAudioPlay
 const { MessageEmbed } = require("discord.js");
 const events = require('events');
 
+const { Worker } = require('worker_threads');
+
 const ytdl = require("ytdl-core");
 const yts = require("yt-search");
 
@@ -341,11 +343,20 @@ class MusicPlayer {
         const query = cmd.split(" ").slice(1).join(" ");
         if (!query) return;
         this.textChannel.send("Searching for _" + query + "_");
-        let vid = await this.search(query);
-        this.textChannel.send("Added **" + vid.title + " (" + vid.duration.timestamp + ")** to queue");
-        if (!vid) return false;
-        this.addToQueue(vid);
-        if (!this.data.current) this.playNext();
+        const worker = new Worker('./worker.js', { workerData: { query: query, type: "voiceCommand" } });
+        worker.on("message", (data) => {
+          try {
+            if (!JSON.parse(data.data)) return false;
+            if (data.type == "video") {
+              const vid = JSON.parse(data.data);
+              this.textChannel.send("Added **" + vid.title + " (" + vid.duration.timestamp + ")** to queue");
+              this.addToQueue(vid);
+              if (!this.data.current) this.playNext();
+            }
+          } catch(e) {
+            console.error("voiceCmdError: ", e);
+          }
+        });        
       break;
       case "pause":
         this.player.pause();
@@ -431,39 +442,32 @@ class MusicPlayer {
 
     if (!interaction.options.getString("song")) return false;
     var query = interaction.options.getString("song");
-    var resource;
-    let playlist = this.playlistParser(query);
-    if (playlist) {
-      await interaction.reply({ content: "Loading Playlist items..." });
-      var videos;
-      try {
-        videos = await this.fetchPlaylist(playlist);
-      } catch(e) {
-        this.error(e);
-        return interaction.editReply({ content: "Failed to load playlist. Maybe it's unviewable?" });
+
+    await interaction.deferReply();
+
+    const worker = new Worker('./worker.js', { workerData: { query: query, type: "command" } });
+    worker.on("message", (data) => {
+      data = JSON.parse(data);
+      if (data) {
+        switch (data.type) {
+          case "list":
+            let videos = data.data;
+            videos.forEach((vid, i) => {
+              this.addToQueue(vid);
+            });
+            if (!this.data.current) this.playNext();
+          break;
+          case "video":
+            let vid = data.data;
+            this.addToQueue(vid);
+            if (!this.data.current) this.playNext();
+          break;
+          default:
+            interaction.editReply(data);
+          break;
+        }
       }
-      if (videos) {interaction.editReply({ content: "Successfully added " + videos.length + " songs to queue." });} else {interaction.editReply({ content: "**There was an error fetching the playlist '" + parsed + "'!**"});return false;};
-      videos.forEach((vid, i) => {
-        this.addToQueue(vid);
-      });
-      if (!this.data.current) this.playNext();
-      return true;
-    }
-    let parsed = this.youtubeParser(query);
-    if (!parsed) {
-      await interaction.reply({ content: "Searching..." });
-      let vid = await this.search(query);
-      if (vid) {interaction.editReply({ content: "Successfully added to queue." });} else {interaction.editReply({ content: "**There was an error loading a youtube video using the query '" + parsed + "'!**"})};
-      if (!vid) return false;
-      this.addToQueue(vid);
-      if (!this.data.current) this.playNext();
-    } else {
-      await interaction.reply({ content: "Loading video data..." });
-      let s = await this.addIdToQueue(parsed);
-      if (s) {interaction.editReply({ content: "Successfully added to queue." });} else {interaction.editReply({ content: "**There was an error loading the youtube video with the id '" + parsed + "'!**"})};
-      if (!this.data.current) this.playNext();
-    }
-    return true;
+    });
   }
 }
 
