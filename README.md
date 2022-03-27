@@ -59,3 +59,9 @@ The voice transcriber used to translate the spoken things to text is also availa
 
 
 *This bot is not perfect. Please contact me through GitHub or similar if you have any problems :)*
+
+## Hosting your Bot
+
+If you want your bot to stay online, you can use a service like Heroku. If you need it to be free I recommend you to use [Wyld.ml](https://wyld.ml/). It offers you a small Linux VM that stays up 24/4.
+
+(They are a pretty new service, so they could be offline right now because of some maintenance but it's worth it and I would recommend it to anyone who wants to host their bot for free without a credit card.)
