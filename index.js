@@ -109,9 +109,10 @@ async function execute(name, interaction) {
 		const musicPlayer = players.get(interaction.guild.id);
 		switch(name) {
 			case "join":
+				interaction.deferReply();
 				let s = musicPlayer.join(interaction);
-				if (!s) {interaction.reply({ content: "Please join a voice channel first", ephemeral: true }); return;}
-				interaction.reply({ content: "Joined." });
+				if (!s) {interaction.editReply({ content: "Please join a voice channel first", ephemeral: true }); return;}
+				interaction.editReply({ content: "Joined." });
 			break;
 			case "leave":
 				var left = musicPlayer.leave(interaction);
@@ -123,7 +124,7 @@ async function execute(name, interaction) {
 				interaction.reply({ content: "I'm not connected to a voice channel...", ephemeral: true });
 			break;
 			case "play":
-				musicPlayer.play(interaction);
+				await musicPlayer.play(interaction);
 			break;
 			case "np":
 				musicPlayer.nowPlaying(interaction);

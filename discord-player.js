@@ -266,13 +266,13 @@ class MusicPlayer {
     return;
   }
 
-  resume(interaction) {
+  resume() {
     return this.player.unpause();
   }
-  pause(interaction) {
+  pause() {
     return this.player.pause();
   }
-  skip(interaction) {
+  skip() {
     this.player.stop();
   }
   clear(interaction) {
@@ -322,7 +322,7 @@ class MusicPlayer {
     interaction.reply({ content: "A new status message will be sent." });
   }
 
-  leave(interaction) {
+  leave() {
     const connection = getVoiceConnection(this.data.guildId);
     if (connection) {
       this.player.stop();
