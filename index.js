@@ -127,7 +127,7 @@ async function execute(name, interaction) {
 				await musicPlayer.play(interaction);
 			break;
 			case "np":
-				musicPlayer.nowPlaying(interaction);
+				await musicPlayer.nowPlaying(interaction);
 			break;
 			case "pause":
 				musicPlayer.pause();

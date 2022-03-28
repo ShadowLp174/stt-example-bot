@@ -279,11 +279,12 @@ class MusicPlayer {
     this.data.queue = [];
     interaction.reply({ content: "Queue cleared" });
   }
-  nowPlaying(interaction) {
-    if (!this.data.current) {interaction.reply({ content: "There's nothing playing at the moment."}); return}
+  async nowPlaying(interaction) {
+    await interaction.deferReply();
+    if (!this.data.current) {interaction.editReply({ content: "There's nothing playing at the moment."}); return}
     let loopqueue = (this.data.loop) ? "**enabled**" : "disabled";
     let songloop = (this.data.queueSong) ? "**enabled**" : "disabled";
-    interaction.reply({ content: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.data.current.duration.timestamp + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop });
+    interaction.editReply({ content: "Playing: **[" + this.data.current.title + "](" + this.data.current.url + ")** (" + this.data.current.duration.timestamp + ")" + "\n\nQueue loop: " + loopqueue + "\nSong loop: " + songloop });
     return true;
   }
   lyrics(interaction) {
