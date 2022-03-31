@@ -10,7 +10,8 @@ const yts = require("yt-search");
 
 const Genius = require("genius-lyrics");
 
-const Transcriber = require("discord-speech-to-text");
+//const Transcriber = require("discord-speech-to-text");
+const Transcriber = require("./transcriber.js");
 
 class VoiceParser {
   constructor(possible) {
@@ -168,6 +169,8 @@ class MusicPlayer {
     const current = this.data.current;
     const data = (this.data.queueSong) ? current : this.data.queue.shift();
     if (current && this.data.loop && !this.data.queueSong) this.data.queue.push(current);
+
+    if (!data) return false;
 
     this.data.volume = 1;
     this.data.current = data;
