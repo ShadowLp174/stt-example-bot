@@ -109,7 +109,7 @@ async function execute(name, interaction) {
 		const musicPlayer = players.get(interaction.guild.id);
 		switch(name) {
 			case "join":
-				interaction.deferReply();
+				await interaction.deferReply();
 				let s = musicPlayer.join(interaction);
 				if (!s) {interaction.editReply({ content: "Please join a voice channel first", ephemeral: true }); return;}
 				interaction.editReply({ content: "Joined." });
