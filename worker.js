@@ -75,17 +75,19 @@ utils.events.on("error", (data) => {
   console.error("worker error: " + data);
 });
 if (workerData) {
-  if (workerData.type == "command") {
-    utils.getVideoData(workerData.query).then((videoData) => {
+  try {
+    if (workerData.type == "command") {
+      const videoData = await utils.getVideoData(workerData.query)
       parentPort.postMessage(JSON.stringify(videoData));
-    });
-  } else if (workerData.type == "voiceCommand") {
-    utils.search(workerData.query, false).then((videoData) => {
+    } else if (workerData.type == "voiceCommand") {
+      const videoData = await utils.search(workerData.query, false)
       if (videoData) {
-        parentPort.postMessage({ type: "video", data: JSON.stringify(videoData)});
+        parentPort.postMessage({ type: "video", data: JSON.stringify(videoData) });
       } else {
         parentPort.postMessage("false");
       }
-    });
+    }
+  } catch(e) {
+    console.log("worker error: ", e);
   }
 }
