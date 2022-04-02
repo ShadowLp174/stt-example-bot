@@ -444,11 +444,12 @@ class MusicPlayer {
 
     if (!interaction.options.getString("song")) return false;
     var query = interaction.options.getString("song");
-
+    var res = false;
 
     const worker = new Worker('./worker.js', { workerData: { query: query, type: "command" } });
     worker.on("message", (data) => {
       data = JSON.parse(data);
+      res = true;
       if (data) {
         switch (data.type) {
           case "list":
@@ -469,6 +470,9 @@ class MusicPlayer {
         }
       }
     });
+    worker.on("exit", (code) => {
+      if (!res) interaction.editReply("There was either an error or no results were found.");
+    })
   }
 }
 
