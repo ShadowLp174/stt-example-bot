@@ -80,6 +80,7 @@ if (workerData) {
       parentPort.postMessage(JSON.stringify(videoData));
     }).catch((e) => {
       console.log("command error: ", e);
+      process.exit(0);
     });
   } else if (workerData.type == "voiceCommand") {
     utils.search(workerData.query, false).then((videoData) => {
@@ -90,6 +91,7 @@ if (workerData) {
       }
     }).catch(error => {
       console.log("voice command error: ", error);
+      process.exit(0);
     });
   }
 }
