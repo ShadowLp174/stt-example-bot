@@ -115,13 +115,12 @@ async function execute(name, interaction) {
 				interaction.editReply({ content: "Joined." });
 			break;
 			case "leave":
-                                await interaction.deferReply();
+          await interaction.deferReply();
 				var left = musicPlayer.leave(interaction);
-
 				if (left) {
-			          return interaction.reply({ content: "Left the voice channel" });
+			    return interaction.editReply({ content: "Left the voice channel" });
 				}
-				return interaction.reply({ content: "I'm not connected to a voice channel...", ephemeral: true });
+				return interaction.editReply({ content: "I'm not connected to a voice channel...", ephemeral: true });
 			break;
 			case "play":
 				await musicPlayer.play(interaction);
