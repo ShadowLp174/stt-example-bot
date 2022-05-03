@@ -56,7 +56,7 @@ class MusicPlayer {
     this.DISCORD_CHAR_LIMIT = 1950;
 
     this.transcriber = new Transcriber(this.config.witAi);
-    this.voiceParser = new VoiceParser(["play", "pause", "resume", "skip", "shuffle", "list"]);
+    this.voiceParser = new VoiceParser(["play", "pause", "resume", "skip", "shuffle", "list", "leave"]);
 
     this.geniusClient = new Genius.Client(this.config.geniusToken);
 
@@ -382,6 +382,11 @@ class MusicPlayer {
         for (let i = 1; i < messages.length; i++) {
           if (messages[i]) this.textChannel.send({ content: messages[i] });
         }
+      break;
+      case "leave":
+        var left = this.leave();
+        if (left) return this.textChannel.send({ content: "Left the voice channel" });
+        this.textChannel.send({ content: "I'm not connected to a voice channel..." });
       break;
       default:
         console.warn("Suspicios case. Query: ", cmd);

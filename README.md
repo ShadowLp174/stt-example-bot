@@ -50,7 +50,7 @@ This is a basic music bot that also has the ability to listen to voice commands.
 - **Voice commands**:
   - **Important**: to enable the voice commands. You have to execute the command `toggle-speech` first!
   - All voice commands start with `music`
-  - There are: `play, pause, resume, skip, shuffle, list`
+  - There are: `play, pause, resume, skip, shuffle, list, leave`
   - For example: `music play <some song>`
 
 ## Voice Transcriber

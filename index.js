@@ -115,7 +115,7 @@ async function execute(name, interaction) {
 				interaction.editReply({ content: "Joined." });
 			break;
 			case "leave":
-          await interaction.deferReply();
+        await interaction.deferReply();
 				var left = musicPlayer.leave(interaction);
 				if (left) {
 			    return interaction.editReply({ content: "Left the voice channel" });
